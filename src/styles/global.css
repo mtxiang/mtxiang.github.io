@@ -443,12 +443,11 @@ body[data-theme="screen"] .desktop {
   height: auto;
   min-height: 0;
 }
-body[data-theme="screen"] .site-header {
-  padding-block: 1.1rem;
-  /* span full width: brand hard-left, nav hard-right */
-  max-width: none;
-  margin-inline: 0;
-  width: 100%;
+/* the homepage is a full desktop — the macOS menubar IS the nav, so drop the
+   website header entirely */
+body[data-theme="screen"] .site-header,
+body[data-theme="screen"] .site-footer {
+  display: none;
 }
 body[data-theme="screen"] .site-footer {
   margin-top: 0;
@@ -790,15 +789,87 @@ body[data-theme="screen"] .site-footer {
   gap: 1rem;
   align-items: center;
 }
-.menubar .mb-left strong {
+.menubar .mb-brand {
   font-weight: 600;
+  color: #3b454a;
 }
-.menubar .mb-left span:not(.mb-apple) {
+.menubar .mb-item {
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
   color: #8b969a;
+  background: none;
+  border: none;
+  border-bottom: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.14s ease;
+}
+.menubar .mb-item:hover,
+.mb-menu.open .mb-item {
+  color: #3b454a;
+  opacity: 1;
 }
 .menubar .mb-apple {
   font-size: 0.8rem;
   color: #6f9aa8;
+}
+
+/* menubar dropdowns */
+.mb-menu {
+  position: relative;
+}
+.mb-menu.open .mb-item {
+  /* subtle "selected menu" highlight, like macOS */
+  background: rgba(111, 154, 168, 0.16);
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px rgba(111, 154, 168, 0.16);
+}
+.mb-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: -6px;
+  z-index: 9500;
+  min-width: 168px;
+  display: none;
+  flex-direction: column;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: saturate(140%) blur(18px);
+  -webkit-backdrop-filter: saturate(140%) blur(18px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9px;
+  box-shadow: 0 14px 34px rgba(40, 60, 66, 0.2);
+}
+.mb-menu.open .mb-dropdown {
+  display: flex;
+}
+.mb-opt {
+  display: block;
+  text-align: left;
+  white-space: nowrap;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  color: #3b454a;
+  background: none;
+  border: none;
+  border-bottom: none;
+  border-radius: 5px;
+  padding: 5px 11px;
+  cursor: pointer;
+}
+.mb-opt:hover {
+  background: var(--accent);
+  color: #fff;
+  opacity: 1;
+}
+.mb-cap {
+  text-transform: capitalize;
+}
+.mb-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: rgba(0, 0, 0, 0.08);
 }
 .menubar .mb-right {
   display: flex;

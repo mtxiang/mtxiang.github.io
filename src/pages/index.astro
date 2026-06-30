@@ -2,8 +2,9 @@
 import Base from "../layouts/Base.astro";
 import { desktopWallpaper, socials } from "../data/site";
 import { experience, resumeHref } from "../data/tech";
+import { CATEGORIES, CATEGORY_LABELS } from "../data/photos";
 
-// Dock socials — pull hrefs from site.ts so they stay editable in one place.
+// Quick links pulled from site.ts so they stay editable in one place.
 const socialByLabel = Object.fromEntries(socials.map((s) => [s.label, s]));
 const linkedin = socialByLabel["LinkedIn"]?.href ?? "#";
 const emailHref = "mailto:michelle001.xiang@gmail.com,mtxiang@mit.edu";
@@ -12,15 +13,43 @@ const emailHref = "mailto:michelle001.xiang@gmail.com,mtxiang@mit.edu";
 <Base theme="screen">
   <div class="fullbleed">
     <div class="desktop" id="desktop" style={`--wallpaper:${desktopWallpaper}`}>
-      <!-- faux macOS menu bar -->
+      <!-- faux macOS menu bar — doubles as the site nav (functional dropdowns) -->
       <div class="menubar">
         <div class="mb-left">
-          <span class="mb-apple">◍</span>
-          <strong>Finder</strong>
-          <span>File</span>
-          <span>Edit</span>
-          <span>View</span>
-          <span>Go</span>
+          <span class="mb-apple">★</span>
+          <strong class="mb-brand">Michelle Xiang</strong>
+
+          <div class="mb-menu">
+            <button class="mb-item">About Me</button>
+            <div class="mb-dropdown">
+              <button class="mb-opt" data-target="win-about">Me</button>
+              <button class="mb-opt" data-target="win-experience">Experience</button>
+              <button class="mb-opt" data-target="win-projects">Projects</button>
+              <button class="mb-opt" data-target="win-favorites">Favorites</button>
+            </div>
+          </div>
+
+          <div class="mb-menu">
+            <button class="mb-item">Photography</button>
+            <div class="mb-dropdown">
+              <a class="mb-opt" href="/photography/">Gallery Wall →</a>
+              <div class="mb-sep"></div>
+              {CATEGORIES.map((cat) => (
+                <a class="mb-opt mb-cap" href={`/photography/${cat}/`}>{CATEGORY_LABELS[cat]}</a>
+              ))}
+              <div class="mb-sep"></div>
+              <a class="mb-opt" href="/photography/projects/">Projects &amp; Installations</a>
+            </div>
+          </div>
+
+          <div class="mb-menu">
+            <button class="mb-item">Contact</button>
+            <div class="mb-dropdown">
+              <a class="mb-opt" href="/contact/">Book a shoot →</a>
+              <a class="mb-opt" href={emailHref}>Email</a>
+              <a class="mb-opt" href={linkedin} target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+          </div>
         </div>
         <div class="mb-right">
           <span class="mb-batt">100%</span>
@@ -31,7 +60,7 @@ const emailHref = "mailto:michelle001.xiang@gmail.com,mtxiang@mit.edu";
       <!-- desktop icons -->
       <div class="desk-icons">
         <button class="desk-icon" data-target="win-about">
-          <span class="ic">📄</span><span class="ic-label">about-me</span>
+          <span class="ic">📄</span><span class="ic-label">me.txt</span>
         </button>
        
         <button class="desk-icon" data-target="win-experience">
@@ -57,7 +86,7 @@ const emailHref = "mailto:michelle001.xiang@gmail.com,mtxiang@mit.edu";
           <span class="traffic">
             <i class="t-red" data-close="win-about"></i><i class="t-yellow"></i><i class="t-green"></i>
           </span>
-          <span class="win-title">📄 about-me.txt</span>
+          <span class="win-title">📄 me.txt</span>
         </header>
         <div class="win-body mono">
           <p>Hello! My name is Michelle.</p>
@@ -88,9 +117,7 @@ const emailHref = "mailto:michelle001.xiang@gmail.com,mtxiang@mit.edu";
             <li>the act of documentation</li>
           </ul>
 
-          <p 
-          class="muted-line">currently: taking photos in NYC and figuring out what comes after MIT
-        </p>
+          <p class="muted-line">currently: taking photos in NYC and figuring out what comes after MIT</p>
           <p>
             For photography and other visual work, take a look at the <a href="/photography/"> gallery wall →</a>
           </p>
@@ -310,6 +337,35 @@ const emailHref = "mailto:michelle001.xiang@gmail.com,mtxiang@mit.edu";
     const open = () => openWin(ic.dataset.target!);
     ic.addEventListener("click", open);
     ic.addEventListener("dblclick", open);
+  });
+
+  // menubar dropdowns — click to open, hover to switch, click-away/Esc to close
+  const menus = [...desktop.querySelectorAll<HTMLElement>(".mb-menu")];
+  let openMenu: HTMLElement | null = null;
+  function closeMenus() {
+    menus.forEach((m) => m.classList.remove("open"));
+    openMenu = null;
+  }
+  function showMenu(m: HTMLElement) {
+    menus.forEach((x) => x.classList.toggle("open", x === m));
+    openMenu = m;
+  }
+  menus.forEach((m) => {
+    const btn = m.querySelector<HTMLElement>(".mb-item")!;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openMenu === m ? closeMenus() : showMenu(m);
+    });
+    btn.addEventListener("pointerenter", () => {
+      if (openMenu && openMenu !== m) showMenu(m);
+    });
+    m.querySelectorAll(".mb-opt").forEach((opt) =>
+      opt.addEventListener("click", closeMenus)
+    );
+  });
+  document.addEventListener("click", () => openMenu && closeMenus());
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenus();
   });
   desktop.querySelectorAll<HTMLElement>("[data-close]").forEach((btn) => {
     btn.addEventListener("click", (e) => {
