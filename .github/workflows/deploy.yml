@@ -26,6 +26,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Build Astro site
         uses: withastro/action@v3 # installs deps + builds + uploads the artifact
+        with:
+          node-version: 22 # Astro 6 requires Node >=22.12 (default is 20)
 
   deploy:
     needs: build
