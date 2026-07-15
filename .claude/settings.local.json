@@ -37,7 +37,9 @@
       "Bash(gh auth *)",
       "Bash(git config *)",
       "Bash(git remote *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "WebFetch(domain:mtxiang.github.io)",
+      "Bash(echo \"--- exit: $? ---\")"
     ]
   }
 }
